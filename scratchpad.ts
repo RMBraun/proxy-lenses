@@ -1,4 +1,4 @@
-import L from './lenses'
+import L from './index'
 
 type Input = {
   a?: {
