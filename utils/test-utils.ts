@@ -62,26 +62,22 @@ class Test {
       )
     )
 
-    const { failedTests, testResults } = tests.reduce(
+    const { failedTests } = tests.reduce(
       (acc, testFunc) => {
         try {
           testFunc()
 
           console.log(`${testFunc.name}: ${color(COLORS.GREEN, RESULT_TEXT.PASSED)}`)
-          acc.testResults[testFunc.name] = color(COLORS.GREEN, RESULT_TEXT.PASSED)
         } catch (e) {
           console.log(`${testFunc.name}: ${color(COLORS.RED, RESULT_TEXT.FAILED)}`)
-          acc.testResults[testFunc.name] = color(COLORS.RED, RESULT_TEXT.FAILED)
           const errorMessage = `${(e as Error)?.stack?.split('\n')[2].trim()}\n${(e as Error)?.message}`
           acc.failedTests.push({ func: testFunc, error: errorMessage })
         }
 
         return acc
       },
-      { testResults: {} as Record<string, string>, failedTests: [] as Array<{ func: Function; error: string }> }
+      { failedTests: [] as Array<{ func: Function; error: string }> }
     )
-
-    console.table(testResults)
 
     console.log('\n')
     if (failedTests.length) {
