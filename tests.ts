@@ -7,6 +7,95 @@ const GEN = {
   arr: [],
 }
 
+type TestObject = {
+  maybeMissing?: {
+    maybe?: {
+      valueString: string
+      valueNumber: number
+      valueObj: {}
+      valueArr: Array<string>
+    }
+    notNull: {
+      valueString: string
+      valueNumber: number
+      valueObj: {}
+      valueArr: Array<string>
+    }
+    isNull: null
+  }
+  maybeNotNull?: {
+    maybe?: {
+      valueString: string
+      valueNumber: number
+      valueObj: {}
+      valueArr: Array<string>
+    }
+    notNull: {
+      valueString: string
+      valueNumber: number
+      valueObj: {}
+      valueArr: Array<string>
+    }
+    isNull: null
+  }
+  notNull: {
+    valueString: string
+    valueNumber: number
+    valueObj: {}
+    valueArr: Array<string>
+    maybe?: {
+      valueString: string
+      valueNumber: number
+      valueObj: {}
+      valueArr: Array<string>
+    }
+    notNull: {
+      valueString: string
+      valueNumber: number
+      valueObj: {}
+      valueArr: Array<string>
+    }
+    isUndefined: undefined
+    isNull: null
+  }
+  isNull: null
+  isUndefined: undefined
+}
+
+const testObject: TestObject = {
+  notNull: {
+    valueString: 'testString',
+    valueNumber: 1143,
+    valueObj: {},
+    valueArr: ['1', '2', '3'],
+    notNull: {
+      valueString: 'testString',
+      valueNumber: 1143,
+      valueObj: {},
+      valueArr: ['1', '2', '3'],
+    },
+    isUndefined: undefined,
+    isNull: null,
+  },
+  maybeNotNull: {
+    maybe: {
+      valueString: 'testString',
+      valueNumber: 1143,
+      valueObj: {},
+      valueArr: ['1', '2', '3'],
+    },
+    notNull: {
+      valueString: 'testString',
+      valueNumber: 1143,
+      valueObj: {},
+      valueArr: ['1', '2', '3'],
+    },
+    isNull: null,
+  },
+  isNull: null,
+  isUndefined: undefined,
+}
+
 runTests('Wrapping and unwrapping', [
   function Null() {
     expect(L(null)._res()).toEqual(null)
@@ -42,6 +131,47 @@ runTests('Wrapping and unwrapping', [
   },
   function Object() {
     ;[{}, { a: 'b' }, { a: { b: 'c' } }].forEach((input) => expect(L(input)._res()).toEqual(input))
+  },
+])
+
+runTests('_res', [
+  function Null() {
+    expect(L(null)._res(null)).toEqual(null)
+    expect(L(null)._res(1)).toEqual(1)
+    expect(L(null)._res('1')).toEqual('1')
+    expect(L(null)._res({})).toSoftEqual({})
+    expect(L(null)._res([])).toSoftEqual([])
+
+    expect(L(testObject).isNull._res(null)).toEqual(null)
+    expect(L(testObject).isNull._res(1)).toEqual(1)
+    expect(L(testObject).isNull._res('1')).toEqual('1')
+    expect(L(testObject).isNull._res({})).toSoftEqual({})
+    expect(L(testObject).isNull._res([])).toSoftEqual([])
+
+    expect(L(testObject).notNull.isNull._res(null)).toEqual(null)
+    expect(L(testObject).notNull.isNull._res(1)).toEqual(1)
+    expect(L(testObject).notNull.isNull._res('1')).toEqual('1')
+    expect(L(testObject).notNull.isNull._res({})).toSoftEqual({})
+    expect(L(testObject).notNull.isNull._res([])).toSoftEqual([])
+  },
+  function Undefined() {
+    expect(L(undefined)._res(null)).toEqual(null)
+    expect(L(undefined)._res(1)).toEqual(1)
+    expect(L(undefined)._res('1')).toEqual('1')
+    expect(L(undefined)._res({})).toSoftEqual({})
+    expect(L(undefined)._res([])).toSoftEqual([])
+
+    expect(L(testObject).isUndefined._res(null)).toEqual(null)
+    expect(L(testObject).isUndefined._res(1)).toEqual(1)
+    expect(L(testObject).isUndefined._res('1')).toEqual('1')
+    expect(L(testObject).isUndefined._res({})).toSoftEqual({})
+    expect(L(testObject).isUndefined._res([])).toSoftEqual([])
+
+    expect(L(testObject).notNull.isUndefined._res(null)).toEqual(null)
+    expect(L(testObject).notNull.isUndefined._res(1)).toEqual(1)
+    expect(L(testObject).notNull.isUndefined._res('1')).toEqual('1')
+    expect(L(testObject).notNull.isUndefined._res({})).toSoftEqual({})
+    expect(L(testObject).notNull.isUndefined._res([])).toSoftEqual([])
   },
 ])
 

@@ -1,8 +1,4 @@
-type NotNull = 'NotNull'
-
-type Maybe = null | undefined | NotNull
-
-type IsNullish<V> = V extends null ? null : V extends undefined ? undefined : NotNull
+type IsNullish<V> = V extends null | undefined ? V : {}
 
 type GetProto<T> = T extends Boolean | boolean
   ? Boolean
@@ -14,7 +10,7 @@ type GetProto<T> = T extends Boolean | boolean
   ? Symbol
   : T
 
-type ProtoWrapper<T, isMaybe extends Maybe> = T extends null | undefined
+type ProtoWrapper<T, isMaybe extends null | undefined | {}> = T extends null | undefined
   ? {}
   : T extends Array<any> | any[] | []
   ? {
@@ -25,10 +21,13 @@ type ProtoWrapper<T, isMaybe extends Maybe> = T extends null | undefined
   : {
       [P in keyof GetProto<T>]-?: GetProto<T>[P] extends (...a: infer A) => any
         ? (...a: A) => Lense<NonNullable<ReturnType<GetProto<T>[P]>>, isMaybe>
-        : Lense<NonNullable<GetProto<T>[P]>, isMaybe extends null | undefined ? isMaybe : IsNullish<GetProto<T>[P]>>
+        : Lense<
+            GetProto<T>[P] extends null | undefined ? GetProto<T>[P] : NonNullable<GetProto<T>[P]>,
+            isMaybe extends null | undefined ? isMaybe : IsNullish<GetProto<T>[P]>
+          >
     }
 
-type Lense<T, isMaybe extends null | undefined | NotNull> = ProtoWrapper<T, isMaybe> & {
+type Lense<T, isMaybe extends null | undefined | {}> = ProtoWrapper<T, isMaybe> & {
   /**
    * Allows access to the raw value at the current step in the chained calls.
    * This is a non-protected call and will always be called.
@@ -45,22 +44,21 @@ type Lense<T, isMaybe extends null | undefined | NotNull> = ProtoWrapper<T, isMa
    * This is a protected call and will only be called if the previous value is not null and not undefined.
    * The value will be pre-wrapped in a Lense.
    */
-  _L: <V>(callback: (value: Lense<NonNullable<T>, NotNull>) => V) => Lense<V, IsNullish<V>>
+  _L: <V>(callback: (value: Lense<NonNullable<T>, {}>) => V) => Lense<V, IsNullish<V>>
   /**
    * Replaces the current value with the provided default value if it is null or undefined.
    */
-  _defaults: (defaultValue: NonNullable<T>) => Lense<T, NotNull>
+  _defaults: (defaultValue: NonNullable<T>) => Lense<T, {}>
   /**
    * Returns the raw value and ends the chain. Replaces the raw value with the provided default value if it is null or undefined.
    */
   _res: <V = undefined>(
     defaultValue?: V
   ) => isMaybe extends null | undefined
-    ? V extends null | undefined
-      ? T | isMaybe
+    ? V extends undefined | null
+      ? T | (V extends null ? null : isMaybe)
       : NonNullable<T> | NonNullable<V>
     : NonNullable<T>
-  //() => isMaybe extends null | undefined ? T | isMaybe : NonNullable<T>
 }
 
 const L = <T>(input?: T | null, prevRef?: unknown): Lense<T, IsNullish<T>> => {

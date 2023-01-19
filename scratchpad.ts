@@ -14,6 +14,7 @@ type Input = {
       e?: number
     }
   }
+  isNull: null
   c?: number
   notNull: {
     notNull: {
@@ -33,6 +34,7 @@ const inputtest: Input = {
     b: [{ test: 'ooga booga tooka', oog: { f: { g: 4 } } }, { test: 'uh oh' }],
     d: {},
   },
+  isNull: null,
   notNull: {
     notNull: {
       oops: 3,
@@ -89,7 +91,7 @@ console.log('output', output6 === 4, output6)
 console.log('output', output7 === 'x not found', output7)
 
 const asdf = inputtest.c
-const maybeTest = L(inputtest).c._res('test')
+const maybeTest = L(inputtest).c._res()
 const maybeTest2 = L(inputtest.c)._res()
 const typeTest = L(inputtest).c._defaults(4)._res()
 const typeTest2 = L(inputtest.c)._defaults(4)._res()
@@ -104,3 +106,5 @@ const ooga3NullMaybe2 = L(inputtest).notNull.isNull.oops._defaults(5)._res()
 
 const moreTest = L(inputtest).a.b[4].test.endsWith('33')._res()
 const moreTest1 = L(inputtest).a.b[4].test._defaults('test').endsWith('33')._res()
+
+const nullTest2 = L(inputtest).isNull._res()
