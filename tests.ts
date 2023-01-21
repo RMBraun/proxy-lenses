@@ -23,6 +23,7 @@ type TestObject = {
       valueObj: {}
       valueArr: Array<string>
     }
+    isUndefined: undefined
     isNull: null
   }
   maybeNotNull?: {
@@ -131,10 +132,16 @@ runTests('Wrapping and unwrapping', [
     expect(L(10)._res()).toEqual(10)
   },
   function Array() {
-    ;[[], ['a'], [1], [[]], [{}]].forEach((input) => expect(L(input)._res()).toEqual(input))
+    expect(L([])._res()).toSoftEqual([])
+    expect(L(['a'])._res()).toSoftEqual(['a'])
+    expect(L([1])._res()).toSoftEqual([1])
+    expect(L([[]])._res()).toSoftEqual([[]])
+    expect(L([{}])._res()).toSoftEqual([{}])
   },
   function Object() {
-    ;[{}, { a: 'b' }, { a: { b: 'c' } }].forEach((input) => expect(L(input)._res()).toEqual(input))
+    expect(L({})._res()).toSoftEqual({})
+    expect(L({ a: 'b' })._res()).toSoftEqual({ a: 'b' })
+    expect(L({ a: { b: 'c' } })._res()).toSoftEqual({ a: { b: 'c' } })
   },
 ])
 
@@ -243,6 +250,66 @@ runTests('_defaults', [
     expect(L(null)._defaults([])._res()).toSoftEqual([])
     expect(L(null)._defaults(false)._res()).toEqual(false)
     expect(L(null)._defaults(true)._res()).toEqual(true)
+
+    expect(L(testObject.isNull)._defaults(0)._res()).toEqual(0)
+    expect(L(testObject.isNull)._defaults('')._res()).toEqual('')
+    expect(L(testObject.isNull)._defaults({})._res()).toSoftEqual({})
+    expect(L(testObject.isNull)._defaults([])._res()).toSoftEqual([])
+    expect(L(testObject.isNull)._defaults(false)._res()).toEqual(false)
+    expect(L(testObject.isNull)._defaults(true)._res()).toEqual(true)
+
+    expect(L(testObject).isNull._defaults(0)._res()).toEqual(0)
+    expect(L(testObject).isNull._defaults('')._res()).toEqual('')
+    expect(L(testObject).isNull._defaults({})._res()).toSoftEqual({})
+    expect(L(testObject).isNull._defaults([])._res()).toSoftEqual([])
+    expect(L(testObject).isNull._defaults(false)._res()).toEqual(false)
+    expect(L(testObject).isNull._defaults(true)._res()).toEqual(true)
+  },
+  function Undefined() {
+    expect(L(undefined)._defaults(0)._res()).toEqual(0)
+    expect(L(undefined)._defaults('')._res()).toEqual('')
+    expect(L(undefined)._defaults({})._res()).toSoftEqual({})
+    expect(L(undefined)._defaults([])._res()).toSoftEqual([])
+    expect(L(undefined)._defaults(false)._res()).toEqual(false)
+    expect(L(undefined)._defaults(true)._res()).toEqual(true)
+
+    expect(L(testObject.isUndefined)._defaults(0)._res()).toEqual(0)
+    expect(L(testObject.isUndefined)._defaults('')._res()).toEqual('')
+    expect(L(testObject.isUndefined)._defaults({})._res()).toSoftEqual({})
+    expect(L(testObject.isUndefined)._defaults([])._res()).toSoftEqual([])
+    expect(L(testObject.isUndefined)._defaults(false)._res()).toEqual(false)
+    expect(L(testObject.isUndefined)._defaults(true)._res()).toEqual(true)
+
+    expect(L(testObject).isUndefined._defaults(0)._res()).toEqual(0)
+    expect(L(testObject).isUndefined._defaults('')._res()).toEqual('')
+    expect(L(testObject).isUndefined._defaults({})._res()).toSoftEqual({})
+    expect(L(testObject).isUndefined._defaults([])._res()).toSoftEqual([])
+    expect(L(testObject).isUndefined._defaults(false)._res()).toEqual(false)
+    expect(L(testObject).isUndefined._defaults(true)._res()).toEqual(true)
+
+    expect(L(testObject.maybeMissing?.isUndefined)._defaults(0)._res()).toEqual(0)
+    expect(L(testObject.maybeMissing?.isUndefined)._defaults('')._res()).toEqual('')
+    expect(L(testObject.maybeMissing?.isUndefined)._defaults({})._res()).toSoftEqual({})
+    expect(L(testObject.maybeMissing?.isUndefined)._defaults([])._res()).toSoftEqual([])
+    expect(L(testObject.maybeMissing?.isUndefined)._defaults(false)._res()).toEqual(false)
+    expect(L(testObject.maybeMissing?.isUndefined)._defaults(true)._res()).toEqual(true)
+
+    expect(L(testObject).maybeMissing.isUndefined._defaults(0)._res()).toEqual(0)
+    expect(L(testObject).maybeMissing.isUndefined._defaults('')._res()).toEqual('')
+    expect(L(testObject).maybeMissing.isUndefined._defaults({})._res()).toSoftEqual({})
+    expect(L(testObject).maybeMissing.isUndefined._defaults([])._res()).toSoftEqual([])
+    expect(L(testObject).maybeMissing.isUndefined._defaults(false)._res()).toEqual(false)
+    expect(L(testObject).maybeMissing.isUndefined._defaults(true)._res()).toEqual(true)
+  },
+  function NonNullish() {
+    expect(L('')._defaults('test')._res()).toEqual('')
+    expect(L(1)._defaults(10)._res()).toEqual(1)
+    expect(L({})._defaults({ a: 'b' })._res()).toSoftEqual({})
+    expect(
+      L([] as Array<number>)
+        ._defaults([1, 2, 3])
+        ._res()
+    ).toSoftEqual([])
   },
 ])
 

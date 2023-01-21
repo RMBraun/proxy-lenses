@@ -52,7 +52,7 @@ type Lense<T, isMaybe extends Nullish | {}> = ProtoWrapper<T, isMaybe> & {
    */
   _defaults: T extends Nullish
     ? <V>(defaultValue: V extends Nullish ? never : V) => Lense<NonNullable<V>, {}>
-    : (defaultValue: NonNullable<T>) => Lense<NonNullable<T>, {}>
+    : (defaultValue: T) => Lense<T, {}>
   /**
    * Returns the raw value and ends the chain. Replaces the raw value with the provided default value if it is null or undefined.
    */
@@ -68,10 +68,14 @@ type Lense<T, isMaybe extends Nullish | {}> = ProtoWrapper<T, isMaybe> & {
 const L = <T>(input?: T | null, prevRef?: unknown): Lense<T, IsNullish<T>> => {
   const wrapper = function Monad() {}
   wrapper._raw = ((callback) => L(callback(input))) as Lense<T, IsNullish<T>>['_raw']
-  //@ts-ignore
-  wrapper._ = ((callback) => L(input == null ? input : callback(input))) as Lense<T, IsNullish<T>>['_']
-  //@ts-ignore
-  wrapper._L = ((callback) => L(input == null ? input : callback(L(input)))) as Lense<T, IsNullish<T>>['_L']
+  wrapper._ = ((callback) => L(input === null ? null : input === undefined ? undefined : callback(input))) as Lense<
+    T,
+    IsNullish<T>
+  >['_']
+  wrapper._L = ((callback) => L(input === null ? null : input === undefined ? undefined : callback(L(input)))) as Lense<
+    T,
+    IsNullish<T>
+  >['_L']
   wrapper._res = ((value) => (input != null ? input : value !== undefined ? value : input)) as Lense<
     T,
     IsNullish<T>
