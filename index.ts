@@ -35,7 +35,7 @@ type Lense<T, isMaybe extends Nullish | {}> = ProtoWrapper<T, isMaybe> & {
    * This is a non-protected call and will always be called.
    * The raw value may be null or undefined.
    */
-  _raw: <V>(callback: (value: T | Nullish) => V) => Lense<V, IsNullish<V>>
+  _raw: <V>(callback: (value: isMaybe extends Nullish ? T | isMaybe : NonNullable<T>) => V) => Lense<V, IsNullish<V>>
   /**
    * Allows access to the value at the current step in the chained call.
    * This is a protected call and will only be called if the previous value is not null and not undefined.
@@ -46,11 +46,11 @@ type Lense<T, isMaybe extends Nullish | {}> = ProtoWrapper<T, isMaybe> & {
    * This is a protected call and will only be called if the previous value is not null and not undefined.
    * The value will be pre-wrapped in a Lense.
    */
-  _L: <V>(callback: (value: Lense<NonNullable<T>, {}>) => V) => Lense<V, IsNullish<V>>
+  _L: <V>(callback: (value: Lense<T & {}, IsNullish<T & {}>>) => V) => Lense<V, IsNullish<V>>
   /**
    * Replaces the current value with the provided default value if it is null or undefined.
    */
-  _defaults: <V = T>(defaultValue: V) => Lense<NonNullable<V>, {}>
+  _defaults: <V>(defaultValue: isMaybe extends Nullish ? V : T) => Lense<isMaybe extends Nullish ? V : T, {}>
   /**
    * Returns the raw value and ends the chain. Replaces the raw value with the provided default value if it is null or undefined.
    */
@@ -63,10 +63,14 @@ type Lense<T, isMaybe extends Nullish | {}> = ProtoWrapper<T, isMaybe> & {
     : NonNullable<T>
 }
 
-const L = <T>(input?: T | null, prevRef?: unknown): Lense<T, IsNullish<T>> => {
+const L = <T>(input: T, prevRef?: unknown): Lense<T, IsNullish<T>> => {
   const wrapper = function Monad() {}
 
-  wrapper._raw = ((callback) => L(callback(input))) as Lense<T, IsNullish<T>>['_raw']
+  wrapper._raw = ((callback) =>
+    L(callback(input as IsNullish<T> extends Nullish ? T | IsNullish<T> : NonNullable<T>))) as Lense<
+    T,
+    IsNullish<T>
+  >['_raw']
 
   wrapper._ = ((callback) => L(input === null ? null : input === undefined ? undefined : callback(input))) as Lense<
     T,
