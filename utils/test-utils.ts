@@ -36,14 +36,17 @@ const color = (colorId: string, text: string) => {
 class Test {
   static instance: Test | null
 
-  private total: number
-  private failed: number
-  private passed: number
+  private totalTests: number
+
+  private totalSuites: number
+  private failedSuites: number
+  private passedSuites: number
 
   constructor() {
-    this.total = 0
-    this.failed = 0
-    this.passed = 0
+    this.totalTests = 0
+    this.totalSuites = 0
+    this.failedSuites = 0
+    this.passedSuites = 0
   }
 
   static getInstance() {
@@ -52,6 +55,10 @@ class Test {
     }
 
     return Test.instance
+  }
+
+  static incTotalTests() {
+    Test.getInstance().totalTests = Test.getInstance().totalTests + 1
   }
 
   static runTests(title: string, tests: Array<Function> = []) {
@@ -87,17 +94,22 @@ class Test {
     }
 
     //update global stats
-    Test.getInstance().failed = (Test.getInstance().failed || 0) + failedTests.length
-    Test.getInstance().total = (Test.getInstance().total || 0) + tests.length
-    Test.getInstance().passed = (Test.getInstance().passed || 0) + (tests.length - failedTests.length)
+    Test.getInstance().failedSuites = (Test.getInstance().failedSuites || 0) + failedTests.length
+    Test.getInstance().totalSuites = (Test.getInstance().totalSuites || 0) + tests.length
+    Test.getInstance().passedSuites = (Test.getInstance().passedSuites || 0) + (tests.length - failedTests.length)
   }
 
   static printStats() {
-    const failed = Test.getInstance().failed
-    const passed = Test.getInstance().passed
-    const total = Test.getInstance().total
+    const failed = Test.getInstance().failedSuites
+    const passed = Test.getInstance().passedSuites
+    const total = Test.getInstance().totalSuites
 
-    console.log(color(failed ? COLORS.RED : COLORS.GREEN, `${LONG_TEXT_BREAK}\nTest Results\n${LONG_TEXT_BREAK}`))
+    console.log(
+      color(
+        failed ? COLORS.RED : COLORS.GREEN,
+        `${LONG_TEXT_BREAK}\nTest Results (${Test.getInstance().totalTests} unit tests)\n${LONG_TEXT_BREAK}`
+      )
+    )
     console.log(color(COLORS.GREEN, `PASSED: ${passed}`))
     console.log(color(failed ? COLORS.RED : COLORS.GREEN, `FAILED: ${failed}`))
     console.log(`TOTAL: ${total}`)
@@ -105,20 +117,28 @@ class Test {
   }
 }
 
+//instantiate
+Test.getInstance()
+
 export const FALSEY_VALUES = [null, undefined, 0, '', false]
 
-export const expect = (a: unknown) => ({
+export const expect = <T>(a: unknown) => ({
   toEqual: (b: unknown) => {
-    if (a !== b) {
+    Test.incTotalTests()
+    if ((a === null && b === null) || (a === undefined && b === undefined) || (Number.isNaN(a) && Number.isNaN(b))) {
+      return
+    } else if (a !== b) {
       throw new Error(`Expected ${JSON.stringify(a)} (${getType(a)}) to equal ${JSON.stringify(b)} (${getType(b)})`)
     }
   },
   toSoftEqual: (b: unknown) => {
+    Test.incTotalTests()
     if (JSON.stringify(a, null, 1) != JSON.stringify(b, null, 1)) {
       throw new Error(`Expected ${JSON.stringify(a)} (${getType(a)}) to equal ${JSON.stringify(b)} (${getType(b)})`)
     }
   },
   toFail: (message?: string) => {
+    Test.incTotalTests()
     try {
       //@ts-ignore
       a()
@@ -128,6 +148,7 @@ export const expect = (a: unknown) => ({
     throw new Error(message ? message : `Expected to fail but passed`)
   },
   toPass: (message?: string) => {
+    Test.incTotalTests()
     try {
       //@ts-ignore
       a()
@@ -136,6 +157,13 @@ export const expect = (a: unknown) => ({
     }
   },
 })
+
+export const shouldNeverRun = (message?: string) => {
+  Test.incTotalTests()
+  return () => {
+    throw new Error(message ? message : `Expected to never run but did`)
+  }
+}
 
 export const printStats = Test.printStats
 

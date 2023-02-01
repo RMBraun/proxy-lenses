@@ -1,5 +1,6 @@
 {
   "name": "proxy-lenses",
+  "type": "module",
   "version": "1.0.0",
   "description": "a simple and light package meant to ease data traversal, manipulation, mutation, and transformation",
   "main": "index.js",

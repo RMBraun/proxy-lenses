@@ -1,4 +1,4 @@
-import { runTests, printStats, expect } from './utils/test-utils'
+import { runTests, printStats, expect, shouldNeverRun } from './utils/test-utils'
 
 import L from './index'
 
@@ -6,6 +6,28 @@ const GEN = {
   obj: {},
   arr: [],
 }
+
+const NON_NULLISH = [
+  '',
+  'test',
+  0,
+  -1,
+  -0,
+  +0,
+  1,
+  {},
+  { a: 'a' },
+  { a: { b: 'b' } },
+  { 1: 'test' },
+  { a: null },
+  { a: undefined },
+  [],
+  [''],
+  [undefined],
+  [null],
+  [1, 2, 3],
+  [{}, {}],
+]
 
 //@TODO add boolean testing
 
@@ -375,10 +397,104 @@ runTests('_raw', [
     L(testObject).maybeMissing.maybe.valueArr._raw((x) => expect(x).toEqual(testObject.maybeMissing?.maybe?.valueArr))
   },
   function NonNullish() {
-    L('test')._raw((x) => expect(x).toEqual('test'))
-    L(5)._raw((x) => expect(x).toEqual(5))
-    L({})._raw((x) => expect(x).toSoftEqual({}))
-    L([])._raw((x) => expect(x).toSoftEqual([]))
+    NON_NULLISH.forEach((value) => {
+      L(value)._raw((x) => expect(x).toEqual(value))
+    })
+  },
+])
+
+runTests('_', [
+  function Null() {
+    L(null)._(shouldNeverRun())
+  },
+  function Undefined() {
+    L(undefined)._(shouldNeverRun())
+  },
+  function Missing() {
+    L(testObject).maybeMissing.maybe.valueArr._(shouldNeverRun())
+  },
+  function NonNullish() {
+    NON_NULLISH.forEach((value) => {
+      L(value)._((x) => expect(x).toEqual(value))
+    })
+  },
+])
+
+runTests('Protos', [
+  function String() {
+    const rawInput = 'test'
+    const input = L(rawInput)
+
+    expect(input.charAt(0)._res()).toEqual(rawInput.charAt(0))
+    expect(input.charAt(15)._res()).toEqual(rawInput.charAt(15))
+
+    expect(input.charCodeAt(0)._res()).toEqual(rawInput.charCodeAt(0))
+    expect(input.charCodeAt(15)._res()).toEqual(rawInput.charCodeAt(15))
+
+    expect(input.codePointAt(0)._res()).toEqual(rawInput.codePointAt(0))
+    expect(input.codePointAt(15)._res()).toEqual(rawInput.codePointAt(15))
+
+    expect(input.concat('a')._res()).toEqual(rawInput.concat('a'))
+
+    expect(input.endsWith('t')._res()).toEqual(rawInput.endsWith('t'))
+    expect(input.endsWith('k')._res()).toEqual(rawInput.endsWith('k'))
+
+    expect(input.includes('est')._res()).toEqual(rawInput.includes('est'))
+    expect(input.includes('oo')._res()).toEqual(rawInput.includes('oo'))
+
+    expect(input.indexOf('tes')._res()).toEqual(rawInput.indexOf('tes'))
+    expect(input.indexOf('oo')._res()).toEqual(rawInput.indexOf('oo'))
+
+    expect(input.lastIndexOf('est')._res()).toEqual(rawInput.lastIndexOf('est'))
+    expect(input.lastIndexOf('oo')._res()).toEqual(rawInput.lastIndexOf('oo'))
+
+    expect(input.length._res()).toEqual(rawInput.length)
+
+    expect(input.localeCompare('boog')._res()).toEqual(rawInput.localeCompare('boog'))
+
+    expect(input.match('tes')._res()).toSoftEqual(rawInput.match('tes'))
+    expect(input.match(/te/)._res()).toSoftEqual(rawInput.match(/te/))
+    expect(input.match(/kk/)._res()).toSoftEqual(rawInput.match(/kk/))
+
+    expect(input.matchAll(/te/g)._res()).toSoftEqual(rawInput.matchAll(/te/g))
+    expect(input.matchAll(/kk/g)._res()).toSoftEqual(rawInput.matchAll(/kk/g))
+
+    expect(input.normalize('NFC')._res()).toEqual(rawInput.normalize('NFC'))
+    expect(input.normalize('NFD')._res()).toEqual(rawInput.normalize('NFD'))
+    expect(input.normalize('NFKC')._res()).toEqual(rawInput.normalize('NFKC'))
+    expect(input.normalize('NFKD')._res()).toEqual(rawInput.normalize('NFKD'))
+
+    expect(input.padEnd(4, '00')._res()).toEqual(rawInput.padEnd(4, '00'))
+
+    expect(input.padStart(4, '00')._res()).toEqual(rawInput.padStart(4, '00'))
+
+    expect(input.repeat(4)._res()).toEqual(rawInput.repeat(4))
+
+    expect(input.replace(/tes/, 'boop')._res()).toEqual(rawInput.replace(/tes/, 'boop'))
+    expect(input.replace('tes', 'boop')._res()).toEqual(rawInput.replace('tes', 'boop'))
+
+    expect(input.replaceAll(/tes/g, 'boop')._res()).toEqual(rawInput.replaceAll(/tes/g, 'boop'))
+    expect(input.replaceAll('tes', 'boop')._res()).toEqual(rawInput.replaceAll('tes', 'boop'))
+
+    expect(input.slice(0, 3)._res()).toEqual(rawInput.slice(0, 3))
+    expect(input.slice(-3, 3)._res()).toEqual(rawInput.slice(-3, 3))
+
+    expect(input.split('t')._res()).toSoftEqual(rawInput.split('t'))
+
+    expect(input.startsWith('t', 0)._res()).toEqual(rawInput.startsWith('t', 0))
+    expect(input.startsWith('t', 1)._res()).toEqual(rawInput.startsWith('t', 1))
+
+    expect(input.toLowerCase()._res()).toEqual(rawInput.toLowerCase())
+
+    expect(input.toLocaleUpperCase('en-US')._res()).toEqual(rawInput.toLocaleUpperCase('en-US'))
+
+    expect(input.toLocaleLowerCase('en-US')._res()).toEqual(rawInput.toLocaleLowerCase('en-US'))
+
+    expect(input.toUpperCase()._res()).toEqual(rawInput.toUpperCase())
+
+    expect(input.trim()._res()).toEqual(rawInput.trim())
+    expect(input.trimEnd()._res()).toEqual(rawInput.trimEnd())
+    expect(input.trimStart()._res()).toEqual(rawInput.trimStart())
   },
 ])
 
