@@ -424,77 +424,351 @@ runTests('Protos', [
   function String() {
     const rawInput = 'test'
     const input = L(rawInput)
+    const nullishInputs = [null, undefined]
 
     expect(input.charAt(0)._res()).toEqual(rawInput.charAt(0))
     expect(input.charAt(15)._res()).toEqual(rawInput.charAt(15))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as string)
+          .charAt(15)
+          ._res()
+      ).toEqual(input)
+    })
 
     expect(input.charCodeAt(0)._res()).toEqual(rawInput.charCodeAt(0))
     expect(input.charCodeAt(15)._res()).toEqual(rawInput.charCodeAt(15))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as string)
+          .charCodeAt(15)
+          ._res()
+      ).toEqual(input)
+    })
 
     expect(input.codePointAt(0)._res()).toEqual(rawInput.codePointAt(0))
     expect(input.codePointAt(15)._res()).toEqual(rawInput.codePointAt(15))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as string)
+          .codePointAt(15)
+          ._res()
+      ).toEqual(input)
+    })
 
     expect(input.concat('a')._res()).toEqual(rawInput.concat('a'))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as string)
+          .concat('a')
+          ._res()
+      ).toEqual(input)
+    })
 
     expect(input.endsWith('t')._res()).toEqual(rawInput.endsWith('t'))
     expect(input.endsWith('k')._res()).toEqual(rawInput.endsWith('k'))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as string)
+          .endsWith('k')
+          ._res()
+      ).toEqual(input)
+    })
 
     expect(input.includes('est')._res()).toEqual(rawInput.includes('est'))
     expect(input.includes('oo')._res()).toEqual(rawInput.includes('oo'))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as string)
+          .includes('est')
+          ._res()
+      ).toEqual(input)
+    })
 
     expect(input.indexOf('tes')._res()).toEqual(rawInput.indexOf('tes'))
     expect(input.indexOf('oo')._res()).toEqual(rawInput.indexOf('oo'))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as string)
+          .indexOf('tes')
+          ._res()
+      ).toEqual(input)
+    })
 
     expect(input.lastIndexOf('est')._res()).toEqual(rawInput.lastIndexOf('est'))
     expect(input.lastIndexOf('oo')._res()).toEqual(rawInput.lastIndexOf('oo'))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as string)
+          .lastIndexOf('est')
+          ._res()
+      ).toEqual(input)
+    })
 
     expect(input.length._res()).toEqual(rawInput.length)
+    nullishInputs.forEach((input) => {
+      expect(L(input as unknown as string).length._res()).toEqual(input)
+    })
 
     expect(input.localeCompare('boog')._res()).toEqual(rawInput.localeCompare('boog'))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as string)
+          .localeCompare('boog')
+          ._res()
+      ).toEqual(input)
+    })
 
     expect(input.match('tes')._res()).toSoftEqual(rawInput.match('tes'))
     expect(input.match(/te/)._res()).toSoftEqual(rawInput.match(/te/))
     expect(input.match(/kk/)._res()).toSoftEqual(rawInput.match(/kk/))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as string)
+          .match('est')
+          ._res()
+      ).toEqual(input)
+      expect(
+        L(input as unknown as string)
+          .match(/te/)
+          ._res()
+      ).toEqual(input)
+    })
 
     expect(input.matchAll(/te/g)._res()).toSoftEqual(rawInput.matchAll(/te/g))
     expect(input.matchAll(/kk/g)._res()).toSoftEqual(rawInput.matchAll(/kk/g))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as string)
+          .matchAll(/te/g)
+          ._res()
+      ).toEqual(input)
+    })
 
     expect(input.normalize('NFC')._res()).toEqual(rawInput.normalize('NFC'))
     expect(input.normalize('NFD')._res()).toEqual(rawInput.normalize('NFD'))
     expect(input.normalize('NFKC')._res()).toEqual(rawInput.normalize('NFKC'))
     expect(input.normalize('NFKD')._res()).toEqual(rawInput.normalize('NFKD'))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as string)
+          .normalize('NFC')
+          ._res()
+      ).toEqual(input)
+    })
 
     expect(input.padEnd(4, '00')._res()).toEqual(rawInput.padEnd(4, '00'))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as string)
+          .padEnd(4, '00')
+          ._res()
+      ).toEqual(input)
+    })
 
     expect(input.padStart(4, '00')._res()).toEqual(rawInput.padStart(4, '00'))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as string)
+          .padStart(4, '00')
+          ._res()
+      ).toEqual(input)
+    })
 
     expect(input.repeat(4)._res()).toEqual(rawInput.repeat(4))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as string)
+          .repeat(4)
+          ._res()
+      ).toEqual(input)
+    })
 
     expect(input.replace(/tes/, 'boop')._res()).toEqual(rawInput.replace(/tes/, 'boop'))
     expect(input.replace('tes', 'boop')._res()).toEqual(rawInput.replace('tes', 'boop'))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as string)
+          .replace(/tes/, 'boop')
+          ._res()
+      ).toEqual(input)
+      expect(
+        L(input as unknown as string)
+          .replace('tes', 'boop')
+          ._res()
+      ).toEqual(input)
+    })
 
     expect(input.replaceAll(/tes/g, 'boop')._res()).toEqual(rawInput.replaceAll(/tes/g, 'boop'))
     expect(input.replaceAll('tes', 'boop')._res()).toEqual(rawInput.replaceAll('tes', 'boop'))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as string)
+          .replaceAll(/tes/g, 'boop')
+          ._res()
+      ).toEqual(input)
+      expect(
+        L(input as unknown as string)
+          .replaceAll('tes', 'boop')
+          ._res()
+      ).toEqual(input)
+    })
 
     expect(input.slice(0, 3)._res()).toEqual(rawInput.slice(0, 3))
     expect(input.slice(-3, 3)._res()).toEqual(rawInput.slice(-3, 3))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as string)
+          .slice(0, 3)
+          ._res()
+      ).toEqual(input)
+    })
 
     expect(input.split('t')._res()).toSoftEqual(rawInput.split('t'))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as string)
+          .split('t')
+          ._res()
+      ).toEqual(input)
+    })
 
     expect(input.startsWith('t', 0)._res()).toEqual(rawInput.startsWith('t', 0))
     expect(input.startsWith('t', 1)._res()).toEqual(rawInput.startsWith('t', 1))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as string)
+          .startsWith('t', 0)
+          ._res()
+      ).toEqual(input)
+    })
 
     expect(input.toLowerCase()._res()).toEqual(rawInput.toLowerCase())
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as string)
+          .toLowerCase()
+          ._res()
+      ).toEqual(input)
+    })
 
     expect(input.toLocaleUpperCase('en-US')._res()).toEqual(rawInput.toLocaleUpperCase('en-US'))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as string)
+          .toLocaleUpperCase('en-US')
+          ._res()
+      ).toEqual(input)
+    })
 
     expect(input.toLocaleLowerCase('en-US')._res()).toEqual(rawInput.toLocaleLowerCase('en-US'))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as string)
+          .toLocaleLowerCase('en-US')
+          ._res()
+      ).toEqual(input)
+    })
 
     expect(input.toUpperCase()._res()).toEqual(rawInput.toUpperCase())
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as string)
+          .toUpperCase()
+          ._res()
+      ).toEqual(input)
+    })
 
     expect(input.trim()._res()).toEqual(rawInput.trim())
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as string)
+          .trim()
+          ._res()
+      ).toEqual(input)
+    })
+
     expect(input.trimEnd()._res()).toEqual(rawInput.trimEnd())
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as string)
+          .trimEnd()
+          ._res()
+      ).toEqual(input)
+    })
+
     expect(input.trimStart()._res()).toEqual(rawInput.trimStart())
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as string)
+          .trimStart()
+          ._res()
+      ).toEqual(input)
+    })
+  },
+  function Number() {
+    const rawInput = 123
+    const input = L(rawInput)
+    const nullishInputs = [null, undefined]
+
+    expect(input.toExponential()._res()).toEqual(rawInput.toExponential())
+    expect(input.toExponential(4)._res()).toEqual(rawInput.toExponential(4))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as number)
+          .toExponential(4)
+          ._res()
+      ).toEqual(input)
+    })
+
+    expect(input.toFixed()._res()).toEqual(rawInput.toFixed())
+    expect(input.toFixed(3)._res()).toEqual(rawInput.toFixed(3))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as number)
+          .toFixed(4)
+          ._res()
+      ).toEqual(input)
+    })
+
+    expect(input.toLocaleString()._res()).toEqual(rawInput.toLocaleString())
+    expect(input.toLocaleString('en-US')._res()).toEqual(rawInput.toLocaleString('en-US'))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as number)
+          .toLocaleString('en-US')
+          ._res()
+      ).toEqual(input)
+    })
+
+    expect(input.toPrecision()._res()).toEqual(rawInput.toPrecision())
+    expect(input.toPrecision(3)._res()).toEqual(rawInput.toPrecision(3))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as number)
+          .toPrecision(4)
+          ._res()
+      ).toEqual(input)
+    })
+
+    expect(input.toString()._res()).toEqual(rawInput.toString())
+    expect(input.toString(2)._res()).toEqual(rawInput.toString(2))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as number)
+          .toString(4)
+          ._res()
+      ).toEqual(input)
+    })
+
+    expect(input.valueOf()._res()).toEqual(rawInput.valueOf())
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as number)
+          .valueOf()
+          ._res()
+      ).toEqual(input)
+    })
   },
 ])
 

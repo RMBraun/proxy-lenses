@@ -11,6 +11,7 @@ const COLORS = {
   GREEN: 'GREEN',
   BLUE: 'BLUE',
   YELLOW: 'YELLOW',
+  CYAN: 'CYAN',
   RESET: 'RESET',
 }
 
@@ -19,6 +20,7 @@ const COLOR_ANSI = {
   [COLORS.GREEN]: '\u001b[32;1m',
   [COLORS.BLUE]: '\u001b[34;1m',
   [COLORS.YELLOW]: '\u001b[33;1m',
+  [COLORS.CYAN]: '\u001b[36m',
   [COLORS.RESET]: '\u001b[0m',
 }
 
@@ -62,19 +64,24 @@ class Test {
   }
 
   static runTests(title: string, tests: Array<Function> = []) {
-    console.log(
-      color(
-        COLORS.YELLOW,
-        `${TEXT_BREAK}\n${title} : ${tests.length} test${tests.length === 1 ? '' : 's'}\n${TEXT_BREAK}`
-      )
-    )
+    console.log(color(COLORS.YELLOW, `${LONG_TEXT_BREAK}\n${title}\n${LONG_TEXT_BREAK}`))
 
     const { failedTests } = tests.reduce(
       (acc, testFunc) => {
         try {
+          const startUnitTestCount = Test.getInstance().totalTests
           testFunc()
+          const endUnitTestCount = Test.getInstance().totalTests
+          const totalUnitTests = endUnitTestCount - startUnitTestCount
 
-          console.log(`${testFunc.name}: ${color(COLORS.GREEN, RESULT_TEXT.PASSED)}`)
+          console.log(
+            `${color(COLORS.CYAN, testFunc.name)}${''.padEnd(30 - testFunc.name.length, '.')}${color(
+              COLORS.GREEN,
+              RESULT_TEXT.PASSED
+            )} (${color(COLORS.BLUE, totalUnitTests.toFixed(0).padStart(3, ' '))} unit test${
+              totalUnitTests === 1 ? '' : 's'
+            })`
+          )
         } catch (e) {
           console.log(`${testFunc.name}: ${color(COLORS.RED, RESULT_TEXT.FAILED)}`)
           const errorMessage = `${(e as Error)?.stack?.split('\n')[2].trim()}\n${(e as Error)?.message}`

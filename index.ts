@@ -166,7 +166,7 @@ const L = <T>(input: T, prevRef?: unknown): Lense<T, IsNullish<T>> => {
         return wrapper[key]
       }
 
-      const returnTarget = input?.[key as keyof T]
+      const returnTarget = input == null ? input : input[key as keyof T]
 
       if (typeof returnTarget === 'function') {
         return L(function FuncMonad() {
