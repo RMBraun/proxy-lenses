@@ -61,6 +61,43 @@ type CustomString<isMaybe extends IsMaybe> = {
   ): Lense<string[], isMaybe>
 }
 
+type CustomArray<T, isMaybe extends IsMaybe> = {
+  /**
+   * Calls the specified callback function for all the elements in an array. The return value of the callback function is the accumulated result, and is provided as an argument in the next call to the callback function.
+   * @param callbackfn A function that accepts up to four arguments. The reduce method calls the callbackfn function one time for each element in the array.
+   * @param initialValue If initialValue is specified, it is used as the initial value to start the accumulation. The first call to the callbackfn function provides this value as an argument instead of an array value.
+   */
+  reduce<U>(
+    callbackfn: (previousValue: U, currentValue: T, currentIndex: number, array: T[]) => U,
+    initialValue: U
+  ): Lense<U, isMaybe>
+
+  /**
+   * Calls the specified callback function for all the elements in an array. The return value of the callback function is the accumulated result, and is provided as an argument in the next call to the callback function.
+   * @param callbackfn A function that accepts up to four arguments. The reduce method calls the callbackfn function one time for each element in the array.
+   * @param initialValue If initialValue is specified, it is used as the initial value to start the accumulation. The first call to the callbackfn function provides this value as an argument instead of an array value.
+   */
+  reduce(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T): Lense<T, isMaybe>
+  reduce(
+    callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T,
+    initialValue: T
+  ): Lense<T, isMaybe>
+
+  reduceRight(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T): Lense<T, isMaybe>
+  reduceRight(
+    callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T,
+    initialValue: T
+  ): Lense<T, isMaybe>
+  /**
+   * Calls the specified callback function for all the elements in an array, in descending order. The return value of the callback function is the accumulated result, and is provided as an argument in the next call to the callback function.
+   * @param callbackfn A function that accepts up to four arguments. The reduceRight method calls the callbackfn function one time for each element in the array.
+   * @param initialValue If initialValue is specified, it is used as the initial value to start the accumulation. The first call to the callbackfn function provides this value as an argument instead of an array value.
+   */
+  reduceRight<U>(
+    callbackfn: (previousValue: U, currentValue: T, currentIndex: number, array: T[]) => U,
+    initialValue: U
+  ): Lense<U, isMaybe>
+}
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -71,7 +108,7 @@ type Nullish = null | undefined
 type IsNullish<V> = V extends Nullish ? V : {}
 
 type GetProto<T> = T extends Array<infer A> | (infer A)[] | []
-  ? Array<A>
+  ? Omit<Array<A>, 'reduce' | 'reduceRight'>
   : T extends Boolean | boolean
   ? Boolean
   : T extends String | string
@@ -84,7 +121,11 @@ type GetProto<T> = T extends Array<infer A> | (infer A)[] | []
   ? RegExp
   : T
 
-type GetProtoOverloads<T, isMaybe extends IsMaybe> = T extends String ? CustomString<isMaybe> : {}
+type GetProtoOverloads<T, isMaybe extends IsMaybe> = T extends Array<infer A> | (infer A)[] | []
+  ? CustomArray<A, isMaybe>
+  : T extends String
+  ? CustomString<isMaybe>
+  : {}
 
 type GetWrappedProto<T, isMaybe extends IsMaybe> = T extends Nullish
   ? {}

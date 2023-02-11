@@ -770,6 +770,331 @@ runTests('Protos', [
       ).toEqual(input)
     })
   },
+  function Array() {
+    const rawInput = [1, 2, 3]
+    const input = L(rawInput.slice(0))
+    const nullishInputs = [null, undefined]
+
+    expect(input.at(0)._res()).toEqual(rawInput.at(0))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as typeof rawInput)
+          .at(0)
+          ._res()
+      ).toEqual(input)
+    })
+
+    expect(input.concat(0)._res()).toSoftEqual(rawInput.concat(0))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as typeof rawInput)
+          .concat(0)
+          ._res()
+      ).toEqual(input)
+    })
+
+    expect(input.copyWithin(0, 1)._res()).toSoftEqual(rawInput.copyWithin(0, 1))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as typeof rawInput)
+          .copyWithin(0, 1)
+          ._res()
+      ).toEqual(input)
+    })
+
+    expect(input.entries()._res()).toSoftEqual(rawInput.entries())
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as typeof rawInput)
+          .entries()
+          ._res()
+      ).toEqual(input)
+    })
+
+    expect(input.every((val) => val > 0)._res()).toEqual(rawInput.every((val) => val > 0))
+    expect(input.every((val) => val > 5)._res()).toEqual(rawInput.every((val) => val > 5))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as typeof rawInput)
+          .every((val) => val > 0)
+          ._res()
+      ).toEqual(input)
+    })
+
+    expect(L([0, 1]).fill(99)._res()).toSoftEqual([0, 1].fill(99))
+    expect(L([0, 1]).fill(99, 1)._res()).toSoftEqual([0, 1].fill(99, 1))
+    expect(L([0, 1]).fill(99, 1, 2)._res()).toSoftEqual([0, 1].fill(99, 1, 2))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as typeof rawInput)
+          .fill(44)
+          ._res()
+      ).toEqual(input)
+    })
+
+    expect(input.filter((val) => val > 1)._res()).toSoftEqual(rawInput.filter((val) => val > 1))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as typeof rawInput)
+          .filter((val) => val > 1)
+          ._res()
+      ).toEqual(input)
+    })
+
+    expect(input.find((val) => val > 1)._res()).toEqual(rawInput.find((val) => val > 1))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as typeof rawInput)
+          .find((val) => val > 1)
+          ._res()
+      ).toEqual(input)
+    })
+
+    expect(input.findIndex((val) => val > 1)._res()).toEqual(rawInput.findIndex((val) => val > 1))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as typeof rawInput)
+          .findIndex((val) => val > 1)
+          ._res()
+      ).toEqual(input)
+    })
+
+    const unFlatRaw = [[1, [2, [3, [4], [5]], [6]], [7]], [8]]
+    const unFlatInput = L(unFlatRaw)
+    expect(unFlatInput.flat()._res()).toSoftEqual(unFlatRaw.flat())
+    expect(unFlatInput.flat(0)._res()).toSoftEqual(unFlatRaw.flat(0))
+    expect(unFlatInput.flat(1)._res()).toSoftEqual(unFlatRaw.flat(1))
+    expect(unFlatInput.flat(2)._res()).toSoftEqual(unFlatRaw.flat(2))
+    expect(unFlatInput.flat(3)._res()).toSoftEqual(unFlatRaw.flat(3))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as typeof rawInput)
+          .flat()
+          ._res()
+      ).toEqual(input)
+    })
+
+    expect(input.flatMap((val) => val * 2)._res()).toSoftEqual(rawInput.flatMap((val) => val * 2))
+    expect(input.flatMap((val) => val * 2, 0)._res()).toSoftEqual(rawInput.flatMap((val) => val * 2, 0))
+    expect(input.flatMap((val) => val * 2, 1)._res()).toSoftEqual(rawInput.flatMap((val) => val * 2, 1))
+    expect(input.flatMap((val) => val * 2, 2)._res()).toSoftEqual(rawInput.flatMap((val) => val * 2, 2))
+    expect(input.flatMap((val) => val * 2, 3)._res()).toSoftEqual(rawInput.flatMap((val) => val * 2, 3))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as typeof rawInput)
+          .flatMap((val) => val * 2)
+          ._res()
+      ).toEqual(input)
+    })
+
+    input.forEach((val, i) => expect(val).toEqual(rawInput[i]))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as typeof rawInput)
+          .forEach((val) => {
+            throw new Error('should not run')
+          })
+          ._res()
+      ).toEqual(input)
+    })
+
+    expect(input.includes(2)._res()).toEqual(rawInput.includes(2))
+    expect(input.includes(20)._res()).toEqual(rawInput.includes(20))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as typeof rawInput)
+          .includes(2)
+          ._res()
+      ).toEqual(input)
+    })
+
+    expect(input.indexOf(2)._res()).toEqual(rawInput.indexOf(2))
+    expect(input.indexOf(20)._res()).toEqual(rawInput.indexOf(20))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as typeof rawInput)
+          .indexOf(2)
+          ._res()
+      ).toEqual(input)
+    })
+
+    expect(input.join(',')._res()).toEqual(rawInput.join(','))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as typeof rawInput)
+          .join(',')
+          ._res()
+      ).toEqual(input)
+    })
+
+    expect(input.keys()._res()).toSoftEqual(rawInput.keys())
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as typeof rawInput)
+          .keys()
+          ._res()
+      ).toEqual(input)
+    })
+
+    expect(input.lastIndexOf(2)._res()).toEqual(rawInput.lastIndexOf(2))
+    expect(input.lastIndexOf(20)._res()).toEqual(rawInput.lastIndexOf(20))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as typeof rawInput)
+          .lastIndexOf(2)
+          ._res()
+      ).toEqual(input)
+    })
+
+    expect(input.length._res()).toEqual(rawInput.length)
+    nullishInputs.forEach((input) => {
+      expect(L(input as unknown as typeof rawInput).length._res()).toEqual(input)
+    })
+
+    expect(input.map((val) => val * 2)._res()).toSoftEqual(rawInput.map((val) => val * 2))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as typeof rawInput)
+          .map((val) => val * 2)
+          ._res()
+      ).toEqual(input)
+    })
+
+    expect(L([0, 1]).pop()._res()).toSoftEqual([0, 1].pop())
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as typeof rawInput)
+          .pop()
+          ._res()
+      ).toEqual(input)
+    })
+
+    expect(input.push()._res()).toSoftEqual(rawInput.push())
+    expect(input.push(3)._res()).toSoftEqual(rawInput.push(3))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as typeof rawInput)
+          .push(3)
+          ._res()
+      ).toEqual(input)
+    })
+
+    expect(input.reduce((acc, curr) => acc + curr, 0)._res()).toSoftEqual(rawInput.reduce((acc, curr) => acc + curr, 0))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as typeof rawInput)
+          .reduce((acc, curr) => acc + curr, 0)
+          ._res()
+      ).toEqual(input)
+    })
+
+    expect(input.reduceRight((acc, curr) => acc + curr, 0)._res()).toSoftEqual(
+      rawInput.reduceRight((acc, curr) => acc + curr, 0)
+    )
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as typeof rawInput)
+          .reduceRight((acc, curr) => acc + curr, 0)
+          ._res()
+      ).toEqual(input)
+    })
+
+    expect(input.reverse()._res()).toSoftEqual(rawInput.reverse())
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as typeof rawInput)
+          .reverse()
+          ._res()
+      ).toEqual(input)
+    })
+
+    expect(L([0, 1]).shift()._res()).toEqual([0, 1].shift())
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as typeof rawInput)
+          .shift()
+          ._res()
+      ).toEqual(input)
+    })
+
+    expect(input.slice()._res()).toSoftEqual(rawInput.slice())
+    expect(input.slice(1)._res()).toSoftEqual(rawInput.slice(1))
+    expect(input.slice(1, 2)._res()).toSoftEqual(rawInput.slice(1, 2))
+    expect(input.slice(-1, 2)._res()).toSoftEqual(rawInput.slice(-1, 2))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as typeof rawInput)
+          .slice()
+          ._res()
+      ).toEqual(input)
+    })
+
+    expect(input.some((val) => val > 1)._res()).toSoftEqual(rawInput.some((val) => val > 1))
+    expect(input.some((val) => val > 10)._res()).toSoftEqual(rawInput.some((val) => val > 10))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as typeof rawInput)
+          .some((val) => val > 1)
+          ._res()
+      ).toEqual(input)
+    })
+
+    expect(input.sort((a, b) => a - b)._res()).toSoftEqual(rawInput.sort((a, b) => a - b))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as typeof rawInput)
+          .sort((a, b) => a - b)
+          ._res()
+      ).toEqual(input)
+    })
+
+    expect(input.splice(0, 1)._res()).toSoftEqual(rawInput.splice(0, 1))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as typeof rawInput)
+          .splice(0, 1)
+          ._res()
+      ).toEqual(input)
+    })
+
+    expect(input.toLocaleString()._res()).toEqual(rawInput.toLocaleString())
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as typeof rawInput)
+          .toLocaleString()
+          ._res()
+      ).toEqual(input)
+    })
+
+    expect(input.toString()._res()).toEqual(rawInput.toString())
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as typeof rawInput)
+          .toString()
+          ._res()
+      ).toEqual(input)
+    })
+
+    expect(L([0, 1]).unshift()._res()).toSoftEqual([0, 1].unshift())
+    expect(L([0, 1]).unshift(4)._res()).toSoftEqual([0, 1].unshift(4))
+    expect(L([0, 1]).unshift(1, 2)._res()).toSoftEqual([0, 1].unshift(1, 2))
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as typeof rawInput)
+          .unshift(1, 2)
+          ._res()
+      ).toEqual(input)
+    })
+
+    expect(input.values()._res()).toSoftEqual(rawInput.values())
+    nullishInputs.forEach((input) => {
+      expect(
+        L(input as unknown as typeof rawInput)
+          .values()
+          ._res()
+      ).toEqual(input)
+    })
+  },
 ])
 
 printStats()
