@@ -18,7 +18,11 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "downlevelIteration": true,
+    "outDir": "dist"
   },
+  "files": [
+    "index.ts"
+  ],
   "exclude": [
     "node_modules",
   ],

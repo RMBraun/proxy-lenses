@@ -5,7 +5,8 @@
   "description": "a simple and light package meant to ease data traversal, manipulation, mutation, and transformation",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "tests": "npx ts-node tests.ts",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
@@ -17,5 +18,7 @@
     "url": "https://github.com/RMBraun/proxy-lenses/issues"
   },
   "homepage": "https://github.com/RMBraun/proxy-lenses#readme",
-  "devDependencies": {}
+  "dependencies": {
+    "typescript": "^4.9.5"
+  }
 }
