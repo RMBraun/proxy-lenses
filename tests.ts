@@ -1097,4 +1097,19 @@ runTests('Protos', [
   },
 ])
 
+runTests('misc', [
+  function random() {
+    expect(
+      L([1, 2, 3, 4])
+        .map((val) => val * 2)
+        .filter((val) => val < 8)
+        .slice(0, 2)
+        .map((val) => `0-${val}`)
+        .sort((a, b) => a.localeCompare(b))
+        .join(', ')
+        ._res()
+    ).toEqual('0-2, 0-4')
+  },
+])
+
 printStats()

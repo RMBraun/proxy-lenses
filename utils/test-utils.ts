@@ -129,7 +129,7 @@ Test.getInstance()
 
 export const FALSEY_VALUES = [null, undefined, 0, '', false]
 
-export const expect = <T>(a: unknown) => ({
+export const expect = (a: unknown) => ({
   toEqual: (b: unknown) => {
     Test.incTotalTests()
     if ((a === null && b === null) || (a === undefined && b === undefined) || (Number.isNaN(a) && Number.isNaN(b))) {

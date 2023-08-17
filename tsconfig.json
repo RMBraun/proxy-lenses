@@ -4,20 +4,24 @@
     "lib": [
       "dom",
       "dom.iterable",
-      "ESNext"
+      "ES2021",
+      "ES2021.String",
+      "ESNext",
+      "ESNext.String"
     ],
     "esModuleInterop": true,
-    "baseUrl": ".",
+    "baseUrl": "./",
     "allowJs": true,
-    "skipLibCheck": true,
+    // "skipLibCheck": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
     "module": "ESNext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "isolatedModules": true,
-    "downlevelIteration": true,
+    // "isolatedModules": true,
+    // "downlevelIteration": true,
+    "sourceMap": true,
+    "declaration": true,
     "outDir": "dist"
   },
   "files": [

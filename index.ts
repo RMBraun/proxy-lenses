@@ -63,6 +63,13 @@ type CustomString<isMaybe extends IsMaybe> = {
 
 type CustomArray<T, isMaybe extends IsMaybe> = {
   /**
+   * Calls a defined callback function on each element of an array, and returns an array that contains the results.
+   * @param callbackfn A function that accepts up to three arguments. The map method calls the callbackfn function one time for each element in the array.
+   * @param thisArg An object to which the this keyword can refer in the callbackfn function. If thisArg is omitted, undefined is used as the this value.
+   */
+  map<U>(callbackfn: (value: T, index: number, array: T[]) => U, thisArg?: any): Lense<U[], isMaybe>
+
+  /**
    * Calls the specified callback function for all the elements in an array. The return value of the callback function is the accumulated result, and is provided as an argument in the next call to the callback function.
    * @param callbackfn A function that accepts up to four arguments. The reduce method calls the callbackfn function one time for each element in the array.
    * @param initialValue If initialValue is specified, it is used as the initial value to start the accumulation. The first call to the callbackfn function provides this value as an argument instead of an array value.
@@ -88,6 +95,7 @@ type CustomArray<T, isMaybe extends IsMaybe> = {
     callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T,
     initialValue: T
   ): Lense<T, isMaybe>
+
   /**
    * Calls the specified callback function for all the elements in an array, in descending order. The return value of the callback function is the accumulated result, and is provided as an argument in the next call to the callback function.
    * @param callbackfn A function that accepts up to four arguments. The reduceRight method calls the callbackfn function one time for each element in the array.
@@ -101,14 +109,32 @@ type CustomArray<T, isMaybe extends IsMaybe> = {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+type DeepArrayPartial<T> = T extends Array<infer A>
+  ? Array<DeepArrayPartial<A> | undefined>
+  : T extends (infer A)[]
+  ? (DeepArrayPartial<A> | undefined)[]
+  : T extends ReadonlyArray<infer A>
+  ? ReadonlyArray<DeepArrayPartial<A> | undefined>
+  : T extends object
+  ? { [P in keyof T]: DeepArrayPartial<T[P]> }
+  : T
+
+// {
+//   [P in keyof T]: T[P] extends Array<infer A> | (infer A)[] | []
+//     ? (DeepArrayPartial<A> | undefined)[]
+//     : T[P] extends ReadonlyArray<infer A>
+//     ? ReadonlyArray<DeepArrayPartial<A> | undefined>
+//     : DeepArrayPartial<T[P]>
+// }
+
 type IsMaybe = Nullish | {}
 
 type Nullish = null | undefined
 
-type IsNullish<V> = V extends Nullish ? V : {}
+type IsNullish<T> = T extends Array<any> | any[] | [] | ReadonlyArray<any> ? undefined : T extends Nullish ? T : {}
 
 type GetProto<T> = T extends Array<infer A> | (infer A)[] | []
-  ? Omit<Array<A>, 'reduce' | 'reduceRight'>
+  ? Omit<Array<A>, 'map' | 'reduce' | 'reduceRight'>
   : T extends Boolean | boolean
   ? Boolean
   : T extends String | string
@@ -133,7 +159,7 @@ type GetWrappedProto<T, isMaybe extends IsMaybe> = T extends Nullish
       [P in keyof GetProto<T>]-?: GetProto<T>[P] extends null
         ? Lense<null, null>
         : GetProto<T>[P] extends (...a: infer A) => infer R
-        ? (...a: A) => Lense<NonNullable<R>, isMaybe & IsNullish<R>>
+        ? (...a: A) => Lense<NonNullable<R>, isMaybe | IsNullish<R>>
         : Lense<
             GetProto<T>[P] extends Nullish ? GetProto<T>[P] : NonNullable<GetProto<T>[P]>,
             isMaybe extends Nullish ? isMaybe : IsNullish<GetProto<T>[P]>
@@ -166,12 +192,12 @@ type Lense<T, isMaybe extends IsMaybe> = GetWrappedProto<T, isMaybe> &
     /**
      * Returns the raw value and ends the chain. Replaces the raw value with the provided default value if it is null or undefined.
      */
-    _res: <V = undefined>(
+    _res: <V extends NonNullable<unknown> | undefined | null = undefined>(
       defaultValue?: V
     ) => isMaybe extends Nullish
       ? V extends Nullish
         ? T | (V extends null ? null : isMaybe)
-        : NonNullable<T> | NonNullable<V>
+        : NonNullable<T> | V
       : NonNullable<T>
   }
 
@@ -199,10 +225,10 @@ const L = <T>(input: T, prevRef?: unknown): Lense<T, IsNullish<T>> => {
   wrapper._defaults = ((value) => L(input ?? value)) as Lense<T, IsNullish<T>>['_defaults']
 
   return new Proxy(wrapper, {
-    apply(target, thisArg, argumentList) {
+    apply(_, thisArg, argumentList) {
       return input == null ? L(prevRef) : L(Reflect.apply(input as any, prevRef ?? thisArg, argumentList))
     },
-    get(target, key) {
+    get(_, key) {
       if (key === '_res' || key === '_defaults' || key === '_raw' || key === '_' || key === '_L') {
         return wrapper[key]
       }

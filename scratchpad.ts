@@ -26,6 +26,7 @@ type Input = {
     isNull: {
       oops: number
     } | null
+    someArray: [number]
   }
 }
 
@@ -43,6 +44,7 @@ const inputtest: Input = {
       oops: 3,
     },
     isNull: null,
+    someArray: [1, 4, 5],
   },
 }
 
@@ -81,6 +83,12 @@ const output7 = L(inputtest)
   })
   // ._defaults('x not found')
   ._res('x not found')
+
+const output8 = L(inputtest).notNull.someArray[4].toFixed(2)._res(0)
+const output9 = L([1, 2, 3])
+  .map((x) => x)[6]
+  .toFixed(2)
+  ._res(4)
 
 console.log('output', output1 === 'OOGA', output1)
 console.log('output', output2 === 'OOGA BOOGA TOOKA  a concat test', output2)
